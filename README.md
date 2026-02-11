@@ -38,6 +38,7 @@ This project helped me learn and practice:
 - **Database**: SQLite3
 - **Authentication**: JWT (golang-jwt/jwt)
 - **Password Hashing**: bcrypt
+- **Validation**: go-playground/validator
 - **Configuration**: godotenv
 
 ## 📁 Project Structure
@@ -68,7 +69,8 @@ event-booking/
 │   └── auth.go            # JWT authentication middleware
 └── utils/
     ├── hash.go            # Password hashing utilities
-    └── jwt.go             # JWT token utilities
+    ├── jwt.go             # JWT token utilities
+    └── validators.go      # Custom validation functions
 ```
 
 ## 🚀 Getting Started
@@ -139,6 +141,20 @@ The server will start on `http://localhost:8000`
 |--------|----------|-------------|---------------|
 | GET | `/users` | Get all users | Yes |
 
+## ✅ Validation Rules
+
+All requests are automatically validated. Invalid data returns `400 Bad Request` with error details.
+
+### User Validation
+- **Email**: Must be a valid email format
+- **Password**: Minimum 8 characters
+
+### Event Validation
+- **Name**: Required, 3-100 characters
+- **Description**: Required, 5-500 characters
+- **Location**: Required, 3-100 characters
+- **DateTime**: Required, must be a future date/time
+
 ## 🔐 Authentication
 
 All protected endpoints require a JWT token in the Authorization header:
@@ -158,9 +174,11 @@ Content-Type: application/json
 
 {
   "email": "user@example.com",
-  "password": "password123"
+  "password": "securepass123"
 }
 ```
+
+**Note**: Password must be at least 8 characters.
 
 ### Login
 ```http
@@ -181,11 +199,13 @@ Content-Type: application/json
 
 {
   "name": "Go Conference 2026",
-  "description": "Annual Go programming conference",
+  "description": "Annual Go programming conference with workshops and talks",
   "location": "San Francisco, CA",
   "dateTime": "2026-06-15T09:00:00Z"
 }
 ```
+
+**Note**: All fields are required. The date must be in the future, and field lengths must meet validation requirements.
 
 ## 🏗 Architecture
 
@@ -204,7 +224,7 @@ This project follows a clean, layered architecture:
 - JWT-based authentication
 - Authorization checks for resource ownership
 - Environment-based configuration
-- Input validation
+- Comprehensive input validation (email format, field lengths, custom validators)
 - SQL injection prevention (parameterized queries)
 
 ## 📖 What I Learned
@@ -215,6 +235,7 @@ Through building this project, I gained hands-on experience with:
 - **HTTP/REST**: Building RESTful APIs with proper status codes and responses
 - **Database**: Working with SQL databases in Go
 - **Security**: Implementing authentication, authorization, and data protection
+- **Validation**: Request validation with struct tags and custom validators
 - **Architecture**: Organizing code for maintainability and scalability
 - **Best Practices**: Clean code, separation of concerns, and error handling patterns
 

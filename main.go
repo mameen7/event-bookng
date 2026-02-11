@@ -5,17 +5,24 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 
 	"event-booking/db"
 	"event-booking/routes"
+	"event-booking/utils"
 )
 
 func main() {
-	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
+	}
+
+	// Register custom validators
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("futuredate", utils.ValidateFutureDate)
 	}
 
 	db.InitDB()
@@ -23,10 +30,9 @@ func main() {
 
 	routes.RegisterRoutes(server)
 
-	// Get port from environment variable
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000" // Default fallback
+		port = "8000"
 	}
 
 	server.Run(":" + port)
