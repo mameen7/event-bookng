@@ -1,0 +1,10 @@
+POST http://localhost:8000/events
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFobWFkbWFtZWVuQGdtYWlsLmNvbSIsImV4cCI6MTc3MDgzNDQ4MiwidXNlcklkIjoyfQ.Opal__ZLDjqLaTDgNJMm7gGwWIlaJrtBW5iaSonHfk8
+
+{
+    "name": "Test Event",
+    "description": "This is a test event.",
+    "datetime": "2025-02-01T10:00:00Z",
+    "location": "19 Sagir Kumasi Street, Yankaba"
+}

@@ -1,2 +1,231 @@
-# event-bookng
-Basic event booking REST API build with Go.
+# Event Booking REST API
+
+A full-featured event booking REST API built with Go. This project was created to deepen my understanding of the Go programming language and backend development best practices.
+
+## 🎯 Learning Goals
+
+This project helped me learn and practice:
+- Building RESTful APIs in Go
+- Clean architecture (handlers → services → database)
+- JWT authentication and authorization
+- Database operations with SQLite
+- Middleware implementation
+- Error handling and validation
+- Environment configuration
+- Security best practices (password hashing, token management)
+
+## ✨ Features
+
+- **User Management**
+  - User registration with password hashing
+  - Login with JWT token generation
+  - User authentication middleware
+
+- **Event Management**
+  - Create, read, update, and delete events
+  - Authorization checks (users can only modify their own events)
+  - Event listing
+
+- **Event Registration**
+  - Users can register for events
+  - Cancel event registrations
+  - Track registered users per event
+
+## 🛠 Tech Stack
+
+- **Language**: Go 1.25
+- **Web Framework**: Gin
+- **Database**: SQLite3
+- **Authentication**: JWT (golang-jwt/jwt)
+- **Password Hashing**: bcrypt
+- **Configuration**: godotenv
+
+## 📁 Project Structure
+
+```
+event-booking/
+├── main.go                 # Application entry point
+├── .env                    # Environment variables (not committed)
+├── db/
+│   ├── db.go              # Database initialization
+│   ├── events.go          # Event database operations
+│   ├── users.go           # User database operations
+│   └── register.go        # Registration database operations
+├── models/
+│   ├── event.go           # Event model
+│   ├── user.go            # User model
+│   └── register.go        # Registration model
+├── routes/
+│   ├── routes.go          # Route registration
+│   ├── events.go          # Event handlers
+│   ├── users.go           # User handlers
+│   └── register.go        # Registration handlers
+├── services/
+│   ├── event.go           # Event business logic
+│   ├── user.go            # User business logic
+│   └── register.go        # Registration business logic
+├── middleware/
+│   └── auth.go            # JWT authentication middleware
+└── utils/
+    ├── hash.go            # Password hashing utilities
+    └── jwt.go             # JWT token utilities
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Go 1.25 or higher
+- SQLite3
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd event-bookng
+```
+
+2. Install dependencies:
+```bash
+go mod download
+```
+
+3. Set up environment variables:
+Create a `.env` file in the root directory:
+```env
+PORT=8000
+JWT_SECRET=your-super-secret-key-change-this
+DB_PATH=./events.db
+ENV=development
+```
+
+4. Run the application:
+```bash
+go run main.go
+```
+
+The server will start on `http://localhost:8000`
+
+## 📚 API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/signup` | Register a new user | No |
+| POST | `/login` | Login and get JWT token | No |
+
+### Events
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/events` | Get all events | Yes |
+| GET | `/events/:id` | Get event by ID | Yes |
+| POST | `/events` | Create a new event | Yes |
+| PUT | `/events/:id` | Update an event | Yes (owner only) |
+| DELETE | `/events/:id` | Delete an event | Yes (owner only) |
+
+### Event Registration
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/events/:id/register` | Register for an event | Yes |
+| DELETE | `/events/:id/register` | Cancel event registration | Yes |
+
+### Users
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/users` | Get all users | Yes |
+
+## 🔐 Authentication
+
+All protected endpoints require a JWT token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+Get your token by logging in via the `/login` endpoint.
+
+## 📝 Example Requests
+
+### Register a User
+```http
+POST http://localhost:8000/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Login
+```http
+POST http://localhost:8000/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Create an Event
+```http
+POST http://localhost:8000/events
+Authorization: Bearer <your-token>
+Content-Type: application/json
+
+{
+  "name": "Go Conference 2026",
+  "description": "Annual Go programming conference",
+  "location": "San Francisco, CA",
+  "dateTime": "2026-06-15T09:00:00Z"
+}
+```
+
+## 🏗 Architecture
+
+This project follows a clean, layered architecture:
+
+1. **Handlers (Routes)**: Handle HTTP requests/responses, parse input, return JSON
+2. **Services**: Contain business logic and authorization rules
+3. **Database**: Handle data persistence and SQL operations
+4. **Models**: Define data structures
+5. **Middleware**: Handle cross-cutting concerns (authentication)
+6. **Utils**: Provide reusable utilities (JWT, password hashing)
+
+## 🔒 Security Features
+
+- Password hashing with bcrypt
+- JWT-based authentication
+- Authorization checks for resource ownership
+- Environment-based configuration
+- Input validation
+- SQL injection prevention (parameterized queries)
+
+## 📖 What I Learned
+
+Through building this project, I gained hands-on experience with:
+
+- **Go Fundamentals**: Structs, interfaces, error handling, packages
+- **HTTP/REST**: Building RESTful APIs with proper status codes and responses
+- **Database**: Working with SQL databases in Go
+- **Security**: Implementing authentication, authorization, and data protection
+- **Architecture**: Organizing code for maintainability and scalability
+- **Best Practices**: Clean code, separation of concerns, and error handling patterns
+
+## 🤝 Contributing
+
+This is a learning project, but suggestions and feedback are welcome!
+
+## 📄 License
+
+This project is open source and available for learning purposes.
+
+---
+
+**Built with ❤️ while learning Go**

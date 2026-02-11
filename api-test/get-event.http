@@ -1,0 +1,3 @@
+GET http://localhost:8000/events/1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFobWFkbWFtZWVuN0BnbWFpbC5jb20iLCJleHAiOjE3NzA4MzM5NjIsInVzZXJJZCI6MX0._tRQUiszNgepswn2TLIX-82f0y61B-3ZbuEMFKOMgDY
