@@ -2,24 +2,50 @@ package routes
 
 import (
 	"event-booking/middleware"
+	"event-booking/services"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(server *gin.Engine) {
+func RegisterRoutes(
+	server *gin.Engine,
+	userService *services.UserService,
+	eventService *services.EventService,
+	eventRegisterService *services.EventRegisterService,
+) {
 	authenticated := server.Group("/")
 	authenticated.Use(middleware.Authenticate)
-	authenticated.GET("/events", getEvents)
-	authenticated.GET("/events/:id", getEventById)
-	authenticated.POST("/events", createEvent)
-	authenticated.PUT("/events/:id", updateEvent)
-	authenticated.DELETE("/events/:id", deleteEvent)
+	authenticated.GET("/events", func(c *gin.Context) {
+		getEvents(c, eventService)
+	})
+	authenticated.GET("/events/:id", func(c *gin.Context) {
+		getEventById(c, eventService)
+	})
+	authenticated.POST("/events", func(c *gin.Context) {
+		createEvent(c, eventService)
+	})
+	authenticated.PUT("/events/:id", func(c *gin.Context) {
+		updateEvent(c, eventService)
+	})
+	authenticated.DELETE("/events/:id", func(c *gin.Context) {
+		deleteEvent(c, eventService)
+	})
 
-	authenticated.POST("/events/:id/register", registerEvent)
-	authenticated.DELETE("/events/:id/register", cancelEventRegister)
+	authenticated.POST("/events/:id/register", func(c *gin.Context) {
+		registerEvent(c, eventRegisterService)
+	})
+	authenticated.DELETE("/events/:id/register", func(c *gin.Context) {
+		cancelEventRegister(c, eventRegisterService)
+	})
 
-	authenticated.GET("/users", getAllUsers)
+	authenticated.GET("/users", func(c *gin.Context) {
+		getAllUsers(c, userService)
+	})
 
-	server.POST("/signup", signup)
-	server.POST("/login", login)
+	server.POST("/signup", func(c *gin.Context) {
+		signup(c, userService)
+	})
+	server.POST("/login", func(c *gin.Context) {
+		login(c, userService)
+	})
 }

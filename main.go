@@ -11,6 +11,7 @@ import (
 
 	"event-booking/db"
 	"event-booking/routes"
+	"event-booking/services"
 	"event-booking/utils"
 )
 
@@ -26,9 +27,16 @@ func main() {
 	}
 
 	db.InitDB()
-	server := gin.Default()
+	eventRepo := db.NewSqlEventRepository()
+	eventRegisterRepo := db.NewSqlEventRegisterRepository()
+	userRepo := db.NewSqlUserRepository()
 
-	routes.RegisterRoutes(server)
+	eventService := services.NewEventService(eventRepo)
+	eventRegisterService := services.NewEventRegisterService(eventRegisterRepo)
+	userService := services.NewUserService(userRepo)
+
+	server := gin.Default()
+	routes.RegisterRoutes(server, userService, eventService, eventRegisterService)
 
 	port := os.Getenv("PORT")
 	if port == "" {

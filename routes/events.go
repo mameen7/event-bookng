@@ -11,8 +11,8 @@ import (
 	"event-booking/services"
 )
 
-func getEvents(context *gin.Context) {
-	events, err := services.GetAllEvents()
+func getEvents(context *gin.Context, eventService *services.EventService) {
+	events, err := eventService.GetAllEvents()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to retrieve events",
@@ -22,7 +22,7 @@ func getEvents(context *gin.Context) {
 	context.JSON(http.StatusOK, events)
 }
 
-func getEventById(context *gin.Context) {
+func getEventById(context *gin.Context, eventService *services.EventService) {
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -31,7 +31,7 @@ func getEventById(context *gin.Context) {
 		return
 	}
 
-	event, err := services.GetEventById(eventId)
+	event, err := eventService.GetEventById(eventId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to retrieve event",
@@ -41,7 +41,7 @@ func getEventById(context *gin.Context) {
 	context.JSON(http.StatusOK, event)
 }
 
-func createEvent(context *gin.Context) {
+func createEvent(context *gin.Context, eventService *services.EventService) {
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 
@@ -53,7 +53,7 @@ func createEvent(context *gin.Context) {
 	}
 
 	event.UserId = context.GetInt64("userId")
-	err = services.CreateEvent(&event)
+	err = eventService.CreateEvent(&event)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
@@ -68,7 +68,7 @@ func createEvent(context *gin.Context) {
 	})
 }
 
-func updateEvent(context *gin.Context) {
+func updateEvent(context *gin.Context, eventService *services.EventService) {
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -87,7 +87,7 @@ func updateEvent(context *gin.Context) {
 	}
 
 	userId := context.GetInt64("userId")
-	err = services.UpdateEvent(eventId, userId, &updatedEvent)
+	err = eventService.UpdateEvent(eventId, userId, &updatedEvent)
 	if err != nil {
 		if errors.Is(err, services.ErrEventNotFound) {
 			context.JSON(http.StatusNotFound, gin.H{
@@ -110,7 +110,7 @@ func updateEvent(context *gin.Context) {
 	})
 }
 
-func deleteEvent(context *gin.Context) {
+func deleteEvent(context *gin.Context, eventService *services.EventService) {
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -120,7 +120,7 @@ func deleteEvent(context *gin.Context) {
 	}
 
 	UserId := context.GetInt64("userId")
-	err = services.DeleteEvent(UserId, eventId)
+	err = eventService.DeleteEvent(UserId, eventId)
 	if err != nil {
 		if errors.Is(err, services.ErrEventNotFound) {
 			context.JSON(http.StatusNotFound, gin.H{

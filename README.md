@@ -98,8 +98,6 @@ Create a `.env` file in the root directory:
 ```env
 PORT=8000
 JWT_SECRET=your-super-secret-key-change-this
-DB_PATH=./events.db
-ENV=development
 ```
 
 4. Run the application:
@@ -209,14 +207,33 @@ Content-Type: application/json
 
 ## 🏗 Architecture
 
-This project follows a clean, layered architecture:
+This project follows a clean, layered architecture with **dependency injection** for loose coupling:
+
+```
+Handlers → Services → Repositories → Database
+```
+
+### Layers
 
 1. **Handlers (Routes)**: Handle HTTP requests/responses, parse input, return JSON
 2. **Services**: Contain business logic and authorization rules
-3. **Database**: Handle data persistence and SQL operations
+3. **Repositories**: Abstract database operations
 4. **Models**: Define data structures
 5. **Middleware**: Handle cross-cutting concerns (authentication)
 6. **Utils**: Provide reusable utilities (JWT, password hashing)
+
+### Dependency Injection
+
+The application uses **dependency injection** to achieve loose coupling between layers:
+
+- **Handlers** receive **Services** as dependencies
+- **Services** receive **Repositories** as dependencies
+- **Repositories** use the database connection
+
+**Benefits:**
+- **Testability**: Each layer can be tested in isolation with mocked dependencies
+- **Flexibility**: Easy to swap implementations (e.g., SQLite → PostgreSQL)
+- **Maintainability**: Clear separation of concerns and explicit dependencies
 
 ## 🔒 Security Features
 
@@ -236,6 +253,8 @@ Through building this project, I gained hands-on experience with:
 - **Database**: Working with SQL databases in Go
 - **Security**: Implementing authentication, authorization, and data protection
 - **Validation**: Request validation with struct tags and custom validators
+- **Dependency Injection**: Implementing DI for loose coupling and testability
+- **Repository Pattern**: Abstracting database operations for flexibility
 - **Architecture**: Organizing code for maintainability and scalability
 - **Best Practices**: Clean code, separation of concerns, and error handling patterns
 

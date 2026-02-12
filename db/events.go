@@ -5,9 +5,15 @@ import (
 	"event-booking/models"
 )
 
+type SqlEventRepository struct{}
+
 var ErrEventNotFound = errors.New("event could not be found")
 
-func CreateEvent(e *models.Event) (int64, error) {
+func NewSqlEventRepository() *SqlEventRepository {
+	return &SqlEventRepository{}
+}
+
+func (r *SqlEventRepository) CreateEvent(e *models.Event) (int64, error) {
 	query := `
 	INSERT INTO events (name, description, location, datetime, user_id)
 	VALUES (?, ?, ?, ?, ?);
@@ -21,7 +27,7 @@ func CreateEvent(e *models.Event) (int64, error) {
 	return result.LastInsertId()
 }
 
-func GetEvents() ([]models.Event, error) {
+func (r *SqlEventRepository) GetEvents() ([]models.Event, error) {
 	query := `SELECT * FROM events;`
 	rows, err := DB.Query(query)
 	if err != nil {
@@ -42,7 +48,7 @@ func GetEvents() ([]models.Event, error) {
 	return events, nil
 }
 
-func GetEventById(id int64) (models.Event, error) {
+func (r *SqlEventRepository) GetEventById(id int64) (models.Event, error) {
 	query := `SELECT * FROM events WHERE id = ?`
 	row := DB.QueryRow(query, id)
 
@@ -51,7 +57,7 @@ func GetEventById(id int64) (models.Event, error) {
 	return e, err
 }
 
-func UpdateEvent(e *models.Event) error {
+func (r *SqlEventRepository) UpdateEvent(e *models.Event) error {
 	query := `
 	UPDATE events
 	SET name = ?, description = ?, location = ?, datetime = ?
@@ -61,7 +67,7 @@ func UpdateEvent(e *models.Event) error {
 	return err
 }
 
-func DeleteEvent(id int64) error {
+func (r *SqlEventRepository) DeleteEvent(id int64) error {
 	query := `
 	DELETE FROM events WHERE id = ?;
 	`

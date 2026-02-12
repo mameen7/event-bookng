@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func registerEvent(context *gin.Context) {
+func registerEvent(context *gin.Context, eventRegisterService *services.EventRegisterService) {
 	userId := context.GetInt64("userId")
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
@@ -20,7 +20,7 @@ func registerEvent(context *gin.Context) {
 		return
 	}
 
-	err = services.RegisterEvent(&userId, &eventId)
+	err = eventRegisterService.RegisterEvent(userId, eventId)
 	if err != nil {
 		if errors.Is(err, services.ErrEventNotFound) {
 			context.JSON(http.StatusNotFound, gin.H{
@@ -39,7 +39,7 @@ func registerEvent(context *gin.Context) {
 	})
 }
 
-func cancelEventRegister(context *gin.Context) {
+func cancelEventRegister(context *gin.Context, eventRegisterService *services.EventRegisterService) {
 	userId := context.GetInt64("userId")
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
@@ -49,7 +49,7 @@ func cancelEventRegister(context *gin.Context) {
 		return
 	}
 
-	err = services.CancelEvent(&userId, &eventId)
+	err = eventRegisterService.CancelEvent(userId, eventId)
 	if err != nil {
 		if errors.Is(err, services.ErrEventNotFound) || errors.Is(err, services.ErrRegisterEventNotFound) {
 			context.JSON(http.StatusNotFound, gin.H{

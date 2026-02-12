@@ -9,7 +9,7 @@ import (
 	"event-booking/services"
 )
 
-func signup(context *gin.Context) {
+func signup(context *gin.Context, userService *services.UserService) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
@@ -19,7 +19,7 @@ func signup(context *gin.Context) {
 		return
 	}
 
-	err = services.CreateUser(&user)
+	err = userService.CreateUser(&user)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to create user",
@@ -32,7 +32,7 @@ func signup(context *gin.Context) {
 	})
 }
 
-func login(context *gin.Context) {
+func login(context *gin.Context, userService *services.UserService) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
@@ -41,7 +41,7 @@ func login(context *gin.Context) {
 		})
 		return
 	}
-	token, err := services.Login(&user)
+	token, err := userService.Login(&user)
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Could not authenticate user",
@@ -56,8 +56,8 @@ func login(context *gin.Context) {
 
 }
 
-func getAllUsers(context *gin.Context) {
-	users, err := services.GetUsers()
+func getAllUsers(context *gin.Context, userService *services.UserService) {
+	users, err := userService.GetUsers()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to retrieve users",

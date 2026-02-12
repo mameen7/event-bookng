@@ -5,7 +5,13 @@ import (
 	"event-booking/utils"
 )
 
-func CreateUser(u *models.User) (int64, error) {
+type SqlUserRepository struct{}
+
+func NewSqlUserRepository() *SqlUserRepository {
+	return &SqlUserRepository{}
+}
+
+func (r *SqlUserRepository) CreateUser(u *models.User) (int64, error) {
 	query := `
 	INSERT INTO users (email, password)
 	VALUES (?, ?);
@@ -23,7 +29,7 @@ func CreateUser(u *models.User) (int64, error) {
 	return int64(id), err
 }
 
-func ValidateCredentials(u *models.User) (bool, error) {
+func (r *SqlUserRepository) ValidateCredentials(u *models.User) (bool, error) {
 	query := `
 	SELECT id, password FROM users WHERE email = ?
 	`
@@ -39,7 +45,7 @@ func ValidateCredentials(u *models.User) (bool, error) {
 
 }
 
-func GetUsers() ([]models.User, error) {
+func (r *SqlUserRepository) GetUsers() ([]models.User, error) {
 	query := `SELECT * FROM users;`
 	rows, err := DB.Query(query)
 	if err != nil {
