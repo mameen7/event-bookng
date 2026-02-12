@@ -1,6 +1,6 @@
 # Event Booking REST API
 
-A full-featured event booking REST API built with Go. This project was created to deepen my understanding of the Go programming language and backend development best practices.
+A full-featured event booking REST API built with Go. I created this project to deepen my understanding of the Go programming language and backend development best practices.
 
 ## 🎯 Learning Goals
 
