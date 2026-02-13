@@ -40,6 +40,7 @@ This project helped me learn and practice:
 - **Password Hashing**: bcrypt
 - **Validation**: go-playground/validator
 - **Configuration**: godotenv
+- **Testing**: testify, go.uber.org/mock
 
 ## 📁 Project Structure
 
@@ -50,8 +51,12 @@ event-booking/
 ├── db/
 │   ├── db.go              # Database initialization
 │   ├── events.go          # Event database operations
+│   ├── events_test.go     # Event repository tests
 │   ├── users.go           # User database operations
-│   └── register.go        # Registration database operations
+│   ├── users_test.go      # User repository tests
+│   ├── register.go        # Registration database operations
+│   ├── register_test.go   # Registration repository tests
+│   └── testdb.go          # Test database helpers
 ├── models/
 │   ├── event.go           # Event model
 │   ├── user.go            # User model
@@ -63,14 +68,23 @@ event-booking/
 │   └── register.go        # Registration handlers
 ├── services/
 │   ├── event.go           # Event business logic
+│   ├── event_test.go      # Event service tests
 │   ├── user.go            # User business logic
-│   └── register.go        # Registration business logic
+│   ├── user_test.go       # User service tests
+│   ├── register.go        # Registration business logic
+│   ├── register_test.go   # Registration service tests
+│   └── mocks/             # Generated mock repositories
 ├── middleware/
 │   └── auth.go            # JWT authentication middleware
-└── utils/
-    ├── hash.go            # Password hashing utilities
-    ├── jwt.go             # JWT token utilities
-    └── validators.go      # Custom validation functions
+├── utils/
+│   ├── hash.go            # Password hashing utilities
+│   ├── hash_test.go       # Password hashing tests
+│   ├── jwt.go             # JWT token utilities
+│   ├── jwt_test.go        # JWT token tests
+│   ├── validators.go      # Custom validation functions
+│   └── validators_test.go # Validation tests
+└── testutil/
+    └── env.go             # Test environment setup
 ```
 
 ## 🚀 Getting Started
@@ -106,6 +120,56 @@ go run main.go
 ```
 
 The server will start on `http://localhost:8000`
+
+## 🧪 Testing
+
+This project includes comprehensive unit and integration tests with **78 tests** achieving over **90% coverage** of core business logic.
+
+### Test Structure
+
+```
+✅ utils:     92.3% coverage (24 tests)
+   - Password hashing and validation
+   - JWT token generation and verification
+   - Custom date validators
+
+✅ services:  98.2% coverage (33 tests)
+   - EventService: CRUD + authorization checks
+   - UserService: User management + JWT login
+   - EventRegisterService: Event registration workflows
+
+✅ db:        80.6% coverage (21 tests)
+   - EventRepository: Full CRUD operations
+   - UserRepository: User CRUD + password hashing
+   - RegisterRepository: Registration management
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run tests with coverage
+go test ./... -cover
+
+# Run tests for specific package
+go test ./services/... -v
+go test ./db/... -v
+go test ./utils/... -v
+
+# Generate HTML coverage report
+go test ./... -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
+
+### Test Patterns
+
+- **Service Layer**: Uses `go.uber.org/mock` to mock repository interfaces
+- **Repository Layer**: Uses in-memory SQLite for integration testing
+- **Utils Layer**: Pure function tests with no dependencies
+
+All tests follow the Arrange-Act-Assert pattern and are fully isolated.
 
 ## 📚 API Endpoints
 
@@ -256,6 +320,8 @@ Through building this project, I gained hands-on experience with:
 - **Dependency Injection**: Implementing DI for loose coupling and testability
 - **Repository Pattern**: Abstracting database operations for flexibility
 - **Architecture**: Organizing code for maintainability and scalability
+- **Testing**: Unit tests, integration tests, mocking, and test-driven development
+- **Test Patterns**: Arrange-Act-Assert, table-driven tests, and test isolation
 - **Best Practices**: Clean code, separation of concerns, and error handling patterns
 
 ## 🤝 Contributing
