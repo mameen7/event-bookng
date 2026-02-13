@@ -21,15 +21,14 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Register custom validators
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("futuredate", utils.ValidateFutureDate)
 	}
 
 	db.InitDB()
-	eventRepo := db.NewSqlEventRepository()
-	eventRegisterRepo := db.NewSqlEventRegisterRepository()
-	userRepo := db.NewSqlUserRepository()
+	eventRepo := db.NewSqlEventRepository(db.DB)
+	eventRegisterRepo := db.NewSqlEventRegisterRepository(db.DB)
+	userRepo := db.NewSqlUserRepository(db.DB)
 
 	eventService := services.NewEventService(eventRepo)
 	eventRegisterService := services.NewEventRegisterService(eventRegisterRepo)

@@ -1,14 +1,19 @@
 package db
 
 import (
+	"database/sql"
 	"event-booking/models"
 	"event-booking/utils"
 )
 
-type SqlUserRepository struct{}
+type SqlUserRepository struct {
+	db *sql.DB
+}
 
-func NewSqlUserRepository() *SqlUserRepository {
-	return &SqlUserRepository{}
+func NewSqlUserRepository(database *sql.DB) *SqlUserRepository {
+	return &SqlUserRepository{
+		db: database,
+	}
 }
 
 func (r *SqlUserRepository) CreateUser(u *models.User) (int64, error) {
@@ -20,7 +25,7 @@ func (r *SqlUserRepository) CreateUser(u *models.User) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	result, err := DB.Exec(query, u.Email, hashedPassword)
+	result, err := r.db.Exec(query, u.Email, hashedPassword)
 	if err != nil {
 		return 0, err
 	}
@@ -33,7 +38,7 @@ func (r *SqlUserRepository) ValidateCredentials(u *models.User) (bool, error) {
 	query := `
 	SELECT id, password FROM users WHERE email = ?
 	`
-	row := DB.QueryRow(query, u.Email)
+	row := r.db.QueryRow(query, u.Email)
 
 	var retrievedPassword string
 	err := row.Scan(&u.Id, &retrievedPassword)
@@ -47,7 +52,7 @@ func (r *SqlUserRepository) ValidateCredentials(u *models.User) (bool, error) {
 
 func (r *SqlUserRepository) GetUsers() ([]models.User, error) {
 	query := `SELECT * FROM users;`
-	rows, err := DB.Query(query)
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}

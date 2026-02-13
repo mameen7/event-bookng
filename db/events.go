@@ -1,16 +1,21 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 	"event-booking/models"
 )
 
-type SqlEventRepository struct{}
+type SqlEventRepository struct {
+	db *sql.DB
+}
 
 var ErrEventNotFound = errors.New("event could not be found")
 
-func NewSqlEventRepository() *SqlEventRepository {
-	return &SqlEventRepository{}
+func NewSqlEventRepository(database *sql.DB) *SqlEventRepository {
+	return &SqlEventRepository{
+		db: database,
+	}
 }
 
 func (r *SqlEventRepository) CreateEvent(e *models.Event) (int64, error) {
@@ -18,7 +23,7 @@ func (r *SqlEventRepository) CreateEvent(e *models.Event) (int64, error) {
 	INSERT INTO events (name, description, location, datetime, user_id)
 	VALUES (?, ?, ?, ?, ?);
 	`
-	result, err := DB.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.UserId)
+	result, err := r.db.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.UserId)
 
 	if err != nil {
 		return 0, err
@@ -29,7 +34,7 @@ func (r *SqlEventRepository) CreateEvent(e *models.Event) (int64, error) {
 
 func (r *SqlEventRepository) GetEvents() ([]models.Event, error) {
 	query := `SELECT * FROM events;`
-	rows, err := DB.Query(query)
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +55,7 @@ func (r *SqlEventRepository) GetEvents() ([]models.Event, error) {
 
 func (r *SqlEventRepository) GetEventById(id int64) (models.Event, error) {
 	query := `SELECT * FROM events WHERE id = ?`
-	row := DB.QueryRow(query, id)
+	row := r.db.QueryRow(query, id)
 
 	var e models.Event
 	err := row.Scan(&e.Id, &e.Name, &e.Description, &e.Location, &e.DateTime, &e.UserId)
@@ -63,7 +68,7 @@ func (r *SqlEventRepository) UpdateEvent(e *models.Event) error {
 	SET name = ?, description = ?, location = ?, datetime = ?
 	WHERE id = ?
 	`
-	_, err := DB.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.Id)
+	_, err := r.db.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.Id)
 	return err
 }
 
@@ -71,6 +76,6 @@ func (r *SqlEventRepository) DeleteEvent(id int64) error {
 	query := `
 	DELETE FROM events WHERE id = ?;
 	`
-	_, err := DB.Exec(query, id)
+	_, err := r.db.Exec(query, id)
 	return err
 }

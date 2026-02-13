@@ -1,13 +1,20 @@
 package db
 
-import "event-booking/models"
+import (
+	"database/sql"
+	"event-booking/models"
+)
 
 type SqlEventRegisterRepository struct {
-	eventRepo SqlEventRepository
+	db        *sql.DB
+	eventRepo *SqlEventRepository
 }
 
-func NewSqlEventRegisterRepository() *SqlEventRegisterRepository {
-	return &SqlEventRegisterRepository{}
+func NewSqlEventRegisterRepository(database *sql.DB) *SqlEventRegisterRepository {
+	return &SqlEventRegisterRepository{
+		db:        database,
+		eventRepo: NewSqlEventRepository(database),
+	}
 }
 
 func (r *SqlEventRegisterRepository) GetEventById(id int64) (models.Event, error) {
@@ -19,20 +26,20 @@ func (r *SqlEventRegisterRepository) RegisterEvent(userId, eventId int64) error 
 		INSERT INTO registrations (user_id, event_id)
 		VALUES (?, ?);
 	`
-	_, err := DB.Exec(query, userId, eventId)
+	_, err := r.db.Exec(query, userId, eventId)
 	return err
 }
 
 func (r *SqlEventRegisterRepository) GetRegisteredEventById(userId, eventId int64) (models.RegisterEvent, error) {
 	query := `SELECT * FROM registrations WHERE user_id = ? AND event_id = ?;`
-	row := DB.QueryRow(query, userId, eventId)
+	row := r.db.QueryRow(query, userId, eventId)
 	var registeredEvent models.RegisterEvent
-	err := row.Scan(&registeredEvent.Id, &registeredEvent.UserId, &registeredEvent.EventId)
+	err := row.Scan(&registeredEvent.Id, &registeredEvent.EventId, &registeredEvent.UserId)
 	return registeredEvent, err
 }
 
 func (r *SqlEventRegisterRepository) DeleteRegisteredEvent(id int64) error {
 	query := `DELETE FROM registrations WHERE id = ?;`
-	_, err := DB.Exec(query, id)
+	_, err := r.db.Exec(query, id)
 	return err
 }

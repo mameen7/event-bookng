@@ -1,6 +1,9 @@
 package db
 
-func createTables() error {
+import "database/sql"
+
+// createTablesForDB creates tables in the provided database
+func createTablesForDB(database *sql.DB) error {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -8,7 +11,7 @@ func createTables() error {
 		password TEXT NOT NULL
 	);
 	`
-	_, err := DB.Exec(createUsersTable)
+	_, err := database.Exec(createUsersTable)
 	if err != nil {
 		return err
 	}
@@ -25,7 +28,7 @@ func createTables() error {
 	);
 	`
 
-	_, err = DB.Exec(createEventsTable)
+	_, err = database.Exec(createEventsTable)
 	if err != nil {
 		return err
 	}
@@ -40,6 +43,11 @@ func createTables() error {
 	);
 	`
 
-	_, err = DB.Exec(createRegistrationsTable)
+	_, err = database.Exec(createRegistrationsTable)
 	return err
+}
+
+// createTables creates tables in the global DB
+func createTables() error {
+	return createTablesForDB(DB)
 }
